@@ -1,0 +1,30 @@
+FROM stablebaselines/stable-baselines-cpu
+
+RUN apt-get -y update \
+    && apt-get -y install \
+    ffmpeg \
+    freeglut3-dev \
+    swig \
+    xvfb \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV CODE_DIR /root/code
+ENV VENV /root/venv
+
+RUN \
+    mkdir -p ${CODE_DIR}/rl_zoo && \
+    . $VENV/bin/activate && \
+    pip uninstall -y stable-baselines && \
+    pip install stable-baselines[mpi]==2.10.0 && \
+    pip install box2d-py==2.3.5 && \
+    pip install pybullet && \
+    pip install gym-minigrid && \
+    pip install scikit-optimize && \
+    pip install optuna && \
+    pip install pytablewriter && \
+    rm -rf $HOME/.cache/pip
+
+ENV PATH=$VENV/bin:$PATH
+
+CMD /bin/bash
